@@ -1,0 +1,820 @@
+<modification>
+    <name>Add persian date to OpenCart</name>
+    <version>2.3.0.2</version>
+    <code>add_persian_date_ocmod</code>
+    <author>opencartcms.org(gh.m)</author>
+    <link>http://opencartcms.org/</link>
+	<license>GNU General Public License version 3 (GPLv3)</license>
+
+
+
+    <!-- admin/controller/catalog -->
+    	<file path="admin/controller/catalog/product.php">
+    		<operation>
+    			<search><![CDATA[$data['text_amount'] = $this->language->get('text_amount');]]></search>
+    			<add position="after"><![CDATA[		$data['lang_code'] = $this->language->get('code');]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/catalog/review.php">
+    		<operation>
+    			<search><![CDATA['filter_date_added' => $filter_date_added,]]></search>
+    			<add position="replace"><![CDATA['filter_date_added' => ($this->language->get('code') == 'fa') ? jtg($filter_date_added) : $filter_date_added,]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/catalog/download.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/customer/customer.php-->
+    	<file path="admin/controller/customer/customer.php">
+    		<operation>
+    			<search><![CDATA['filter_date_added'        => $filter_date_added,]]></search>
+    			<add position="replace"><![CDATA['filter_date_added'        => ($this->language->get('code') == 'fa') ? jtg($filter_date_added) : $filter_date_added,]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA['date_added' => date('d/m/y', strtotime($result['date_added'])),]]></search>
+    			<add position="replace"><![CDATA['date_added' => ($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date('d/m/y', strtotime($result['date_added'])),]]></add>
+    		</operation>
+    	</file>
+
+    <!-- admin/controller/dashboard -->
+    	<file path="admin/controller/extension/dashboard/activity.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('datetime_format'), strtotime($result['date_added']))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('datetime_format'), strtotime($result['date_added']))]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/extension/dashboard/chart.php">
+    		<operation info="Chart For Week">
+    			<search><![CDATA[$json['xaxis'][] = array(date('w', strtotime($date)), date('D', strtotime($date)));]]></search>
+    			<add position="replace"><![CDATA[$json['xaxis'][] = ($this->language->get('code') == 'fa') ? array(date('w', strtotime($date)), jdate('l', strtotime($date))) : array(date('w', strtotime($date)), date('D', strtotime($date)));]]></add>
+    		</operation>
+    		<operation info="Chart For Month">
+    			<search><![CDATA[for ($i = 1; $i <= date('t'); $i++) {]]></search>
+    			<add position="replace" offset="4"><![CDATA[
+    				if ($this->language->get('code') == 'fa') {
+    					for ($i = 1; $i <= jdate('t'); $i++) {
+    						$jdate = jdate('Y') . '-' . jdate('m') . '-' . $i;
+    						$date = jtg($jdate);
+
+    						$json['xaxis'][] = array(jdate('j', strtotime($date)), jdate('d', strtotime($date)));
+    					}
+    				}  else {
+    					for ($i = 1; $i <= date('t'); $i++) {
+    						$date = date('Y') . '-' . date('m') . '-' . $i;
+
+    						$json['xaxis'][] = array(date('j', strtotime($date)), date('d', strtotime($date)));
+    					}
+    				}
+    			]]></add>
+    		</operation>
+    		<operation info="Chart For Year">
+    			<search><![CDATA[$json['xaxis'][] = array($i, date('M', mktime(0, 0, 0, $i)));]]></search>
+    			<add position="replace"><![CDATA[$json['xaxis'][] = ($this->language->get('code') == 'fa') ? array($i, jdate('F', jmktime(0, 0, 0, $i, 1, jdate('Y')))) : array($i, date('M', mktime(0, 0, 0, $i)));]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/extension/dashboard/customer,order,sale.php -->
+    	<file path="admin/controller/extension/dashboard/{customer,order,sale}.php">
+    		<operation>
+    			<search><![CDATA[date('Y-m-d', strtotime('-1 day'))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate('Y-m-d', strtotime('-1 day')) : date('Y-m-d', strtotime('-1 day'))]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[date('Y-m-d', strtotime('-2 day'))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate('Y-m-d', strtotime('-2 day')) : date('Y-m-d', strtotime('-2 day'))]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/extension/dashboard/recent.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></add>
+    		</operation>
+    	</file>
+
+    <!-- admin/controller/extension -->
+    	<file path="admin/controller/extension/{event,modification}.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) :date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/localisation/currency,tax_rate.php	-->
+    	<file path="admin/controller/localisation/{currency,tax_rate}.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_modified'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_modified'])) : date($this->language->get('date_format_short'), strtotime($result['date_modified'])),]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/localisation/tax_rate.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/localisation/zone.php">
+    		<operation>
+    			<search><![CDATA[$order = 'ASC';]]></search>
+    			<add position="replace"><![CDATA[$order = 'DESC';]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/marketing/affiliate,marketing.php-->
+    	<file path="admin/controller/marketing/{affiliate,marketing}.php">
+    		<operation>
+    			<search><![CDATA['filter_date_added' => $filter_date_added,]]></search>
+    			<add position="replace" regex="true"><![CDATA['filter_date_added' => ($this->language->get('code') == 'fa') ? jtg($filter_date_added) : $filter_date_added,]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/marketing/affiliate,marketing,coupon.php-->
+    	<file path="admin/controller/marketing/{affiliate,marketing,coupon}.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/marketing/coupon.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_start'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_start'])) : date($this->language->get('date_format_short'), strtotime($result['date_start'])),]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_end'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_end'])) : date($this->language->get('date_format_short'), strtotime($result['date_end'])),]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$data['text_amount'] = $this->language->get('text_amount');]]></search>
+    			<add position="after"><![CDATA[		$data['lang_code'] = $this->language->get('code');]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/report/affiliate,affiliate_activity,customer_activity,customer_credit,customer_order,customer_reward,marketing,product_purchased,sale_coupon,sale_order,sale_return,sale_shipping,sale_tax.php-->
+    	<file path="admin/controller/report/{affiliate,affiliate_activity,customer_activity,customer_credit,customer_reward,sale_coupon}.php">
+    		<operation>
+    			<search><![CDATA['filter_date_start'	=> $filter_date_start,]]></search>
+    			<add position="replace" offset="1"><![CDATA[
+    			'filter_date_start' => ($this->language->get('code') == 'fa') ? jtg($filter_date_start) : $filter_date_start,
+    			'filter_date_end'	=> ($this->language->get('code') == 'fa') ? jtg($filter_date_end) : $filter_date_end,
+    			]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/report/{marketing,product_purchased,sale_order,sale_shipping,sale_tax}.php">
+    		<operation>
+    			<search><![CDATA['filter_date_start'	     => $filter_date_start,]]></search>
+    			<add position="replace" offset="1"><![CDATA[
+    			'filter_date_start' => ($this->language->get('code') == 'fa') ? jtg($filter_date_start) : $filter_date_start,
+    			'filter_date_end'	=> ($this->language->get('code') == 'fa') ? jtg($filter_date_end) : $filter_date_end,
+    			]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/report/customer_order.php">
+    		<operation>
+    			<search><![CDATA['filter_date_start'			=> $filter_date_start,]]></search>
+    			<add position="replace" offset="1"><![CDATA[
+    			'filter_date_start' => ($this->language->get('code') == 'fa') ? jtg($filter_date_start) : $filter_date_start,
+    			'filter_date_end'	=> ($this->language->get('code') == 'fa') ? jtg($filter_date_end) : $filter_date_end,
+    			]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/report/sale_return.php">
+    		<operation>
+    			<search><![CDATA['filter_date_start'	      => $filter_date_start,]]></search>
+    			<add position="replace" offset="1"><![CDATA[
+    			'filter_date_start' => ($this->language->get('code') == 'fa') ? jtg($filter_date_start) : $filter_date_start,
+    			'filter_date_end'	=> ($this->language->get('code') == 'fa') ? jtg($filter_date_end) : $filter_date_end,
+    			]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/report/customer_activity,customer_online.php-->
+    	<file path="admin/controller/report/{customer_activity,customer_online}.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('datetime_format'), strtotime($result['date_added']))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('datetime_format'), strtotime($result['date_added']))]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/report/sale_order.php">
+    		<operation>
+    			<search><![CDATA[$filter_date_start = date('Y-m-d', strtotime(date('Y') . '-' . date('m') . '-01'));]]></search>
+    			<add position="replace"><![CDATA[$filter_date_start = ($this->language->get('code') == 'fa') ? jdate('Y') . '-' . jdate('m') . '-01' : date('Y-m-d', strtotime(date('Y') . '-' . date('m') . '-01'));]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$filter_date_end = date('Y-m-d');]]></search>
+    			<add position="replace"><![CDATA[$filter_date_end = ($this->language->get('code') == 'fa') ? jdate('Y-m-d') : date('Y-m-d');]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/report/sale_order,sale_return,sale_shipping,sale_tax.php-->
+    	<file path="admin/controller/report/{sale_order,sale_return,sale_shipping,sale_tax}.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_start'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_start'])) : date($this->language->get('date_format_short'), strtotime($result['date_start'])),]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_end'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_end'])) : date($this->language->get('date_format_short'), strtotime($result['date_end'])),]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/sale/recurring.php-->
+    	<file path="admin/controller/sale/recurring.php">
+    		<operation>
+    			<search><![CDATA['filter_date_added'         => $filter_date_added,]]></search>
+    			<add position="replace"><![CDATA['filter_date_added'        => ($this->language->get('code') == 'fa') ? jtg($filter_date_added) : $filter_date_added,]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$data['date_added'] = date($this->language->get('date_format_short'), strtotime($order_info['date_added']));]]></search>
+    			<add position="replace"><![CDATA[$data['date_added'] = ($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($order_info['date_added'])) : date($this->language->get('date_format_short'), strtotime($order_info['date_added']));]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/sale/order,recurring,return,voucher.php-->
+    	<file path="admin/controller/sale/{order,recurring,return,voucher}.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/sale/order,return.php-->
+    	<file path="admin/controller/sale/order.php">
+    		<operation>
+    			<search><![CDATA['filter_date_added'    => $filter_date_added,]]></search>
+    			<add position="replace" offset="1"><![CDATA[
+    			'filter_date_added'    => ($this->language->get('code') == 'fa') ? jtg($filter_date_added) : $filter_date_added ,
+    			'filter_date_modified' => ($this->language->get('code') == 'fa') ? jtg($filter_date_modified) : $filter_date_modified,
+    			]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($order_info['date_added']))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($order_info['date_added'])) : date($this->language->get('date_format_short'), strtotime($order_info['date_added']))]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/sale/return.php">
+    		<operation>
+    			<search><![CDATA['filter_date_added'       => $filter_date_added,]]></search>
+    			<add position="replace" offset="1"><![CDATA[
+    			'filter_date_added'    => ($this->language->get('code') == 'fa') ? jtg($filter_date_added) : $filter_date_added,
+    			'filter_date_modified' => ($this->language->get('code') == 'fa') ? jtg($filter_date_modified) : $filter_date_modified,
+    			]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/sale/{order,return}.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_modified'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_modified'])) : date($this->language->get('date_format_short'), strtotime($result['date_modified'])),]]></add>
+    		</operation>
+    	</file>
+
+    <!-- admin/controller/setting -->
+    	<file path="admin/controller/setting/setting.php">
+    		<operation>
+    			<search><![CDATA[$data['entry_currency_auto'] = $this->language->get('entry_currency_auto');]]></search>
+    			<add position="after"><![CDATA[		$data['entry_shamsidate_format'] = $this->language->get('entry_shamsidate_format');]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$data['help_currency_auto'] = $this->language->get('help_currency_auto');]]></search>
+    			<add position="after"><![CDATA[		$data['help_shamsidate_format'] = $this->language->get('help_shamsidate_format');]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[if (isset($this->request->post['config_currency_auto'])) {]]></search>
+    			<add position="before"><![CDATA[
+    		$data['shamsidate_formats'] = array();
+    		$data['shamsidate_formats'][] = array(
+    			'code' 	=> $this->language->get('date_format_short'),
+    			'title' => ($this->language->get('code') == 'fa') ? jdate($this->language->get('date_format_short')) : date($this->language->get('date_format_short'))
+    		);
+    		$data['shamsidate_formats'][] = array(
+    			'code' 	=> $this->language->get('date_format_long'),
+    			'title' => ($this->language->get('code') == 'fa') ? jdate($this->language->get('date_format_long')) : date($this->language->get('date_format_long'))
+    		);
+    		$data['shamsidate_formats'][] = array(
+    			'code' 	=> $this->language->get('datetime_format'),
+    			'title' => ($this->language->get('code') == 'fa') ? jdate($this->language->get('datetime_format')) : date($this->language->get('datetime_format'))
+    		);
+    		$data['shamsidate_formats'][] = array(
+    			'code' 	=> $this->language->get('datetime_format_long'),
+    			'title' => ($this->language->get('code') == 'fa') ? jdate($this->language->get('datetime_format_long')) : date($this->language->get('datetime_format_long'))
+    		);
+
+    		if (isset($this->request->post['config_shamsidate_format'])) {
+    			$data['config_shamsidate_format'] = $this->request->post['config_shamsidate_format'];
+    		} else {
+    			$data['config_shamsidate_format'] = $this->config->get('config_shamsidate_format');
+    		}
+    			]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/controller/setting/store.php">
+    		<operation>
+    			<search><![CDATA[$data['entry_currency'] = $this->language->get('entry_currency');]]></search>
+    			<add position="after"><![CDATA[		$data['entry_shamsidate_format'] = $this->language->get('entry_shamsidate_format');]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$data['help_currency'] = $this->language->get('help_currency');]]></search>
+    			<add position="after"><![CDATA[		$data['help_shamsidate_format'] = $this->language->get('help_shamsidate_format');]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[if (isset($this->request->post['config_currency'])) {]]></search>
+    			<add position="before"><![CDATA[
+    		$data['shamsidate_formats'] = array();
+    		$data['shamsidate_formats'][] = array(
+    			'code' 	=> $this->language->get('date_format_short'),
+    			'title' => ($this->language->get('code') == 'fa') ? jdate($this->language->get('date_format_short')) : date($this->language->get('date_format_short'))
+    		);
+    		$data['shamsidate_formats'][] = array(
+    			'code' 	=> $this->language->get('date_format_long'),
+    			'title' => ($this->language->get('code') == 'fa') ? jdate($this->language->get('date_format_long')) : date($this->language->get('date_format_long'))
+    		);
+    		$data['shamsidate_formats'][] = array(
+    			'code' 	=> $this->language->get('datetime_format'),
+    			'title' => ($this->language->get('code') == 'fa') ? jdate($this->language->get('datetime_format')) : date($this->language->get('datetime_format'))
+    		);
+    		$data['shamsidate_formats'][] = array(
+    			'code' 	=> $this->language->get('datetime_format_long'),
+    			'title' => ($this->language->get('code') == 'fa') ? jdate($this->language->get('datetime_format_long')) : date($this->language->get('datetime_format_long'))
+    		);
+
+    		if (isset($this->request->post['config_shamsidate_format'])) {
+    			$data['config_shamsidate_format'] = $this->request->post['config_shamsidate_format'];
+    		} else {
+    			$data['config_shamsidate_format'] = $this->config->get('config_shamsidate_format');
+    		}
+    			]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/tool-->
+    	<file path="admin/controller/tool/upload.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></add>
+    		</operation>
+    	</file>
+
+    <!--admin/controller/user/api,user.php-->
+    	<file path="admin/controller/user/{api,user}.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added'])),]]></add>
+    		</operation>
+    	</file>
+
+    <!-- admin/language/en-gb -->
+    	<file path="admin/language/en-gb/en-gb.php">
+    		<operation>
+    			<search><![CDATA[$_['datetime_format']]]></search>
+    			<add position="before"><![CDATA[
+    $_['datetime_format_long'] 			= 'd/m/Y - H:i:s';
+    			]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/language/en-gb/setting/setting.php">
+    		<operation>
+    			<search><![CDATA[$_['entry_currency_auto']]]></search>
+    			<add position="before"><![CDATA[
+    $_['entry_shamsidate_status']          = 'Shamsi Date Status';
+    $_['entry_shamsidate_format']          = 'Shamsi Date Format';
+    			]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$_['help_currency_auto']]]></search>
+    			<add position="before"><![CDATA[
+    $_['help_shamsidate_status']           = 'By Activate This Option You Can View Date In Format Shamsi Date.';
+    $_['help_shamsidate_format']           = 'Shamsi Date Format For Persian Language.';
+    			]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/language/en-gb/setting/store.php">
+    		<operation>
+    			<search><![CDATA[$_['entry_currency']]]></search>
+    			<add position="before"><![CDATA[
+    $_['entry_shamsidate_status']          = 'Shamsi Date Status';
+    $_['entry_shamsidate_format']          = 'Shamsi Date Format';
+    			]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$_['help_currency']]]></search>
+    			<add position="before"><![CDATA[
+    $_['help_shamsidate_status']           = 'By Activate This Option You Can View Date In Format Shamsi Date.';
+    $_['help_shamsidate_format']           = 'Shamsi Date Format For Persian Language.';
+    			]]></add>
+    		</operation>
+    	</file>
+
+    <!-- admin/language/fa-ir -->
+    	<file path="admin/language/fa-ir/setting/setting.php">
+    		<operation>
+    			<search><![CDATA[$_['entry_currency_auto']]]></search>
+    			<add position="before"><![CDATA[
+    				$_['entry_shamsidate_status']      = 'وضعیت تاریخ شمسی';
+    				$_['entry_shamsidate_format']      = 'فرمت نمایش تاریخ';
+    			]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$_['help_currency_auto']]]></search>
+    			<add position="before"><![CDATA[
+    				$_['help_shamsidate_status']       = 'با فعالسازی این گزینه تاریخ شمسی در کل فروشگاه و مدیریت نمایش داده می شود.';
+    				$_['help_shamsidate_format']       = 'فرمت نمایش تاریخ شمسی را انتخاب کنید.';
+    			]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/language/en-gb/setting/store.php">
+    		<operation>
+    			<search><![CDATA[$_['entry_currency']]]></search>
+    			<add position="before"><![CDATA[
+    $_['entry_shamsidate_status']      = 'وضعیت تاریخ شمسی';
+    $_['entry_shamsidate_format']      = 'فرمت نمایش تاریخ';
+    			]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$_['help_currency']]]></search>
+    			<add position="before"><![CDATA[
+    $_['help_shamsidate_status']       = 'با فعالسازی این گزینه تاریخ شمسی در کل فروشگاه و مدیریت نمایش داده می شود.';
+    $_['help_shamsidate_format']       = 'فرمت نمایش تاریخ شمسی را انتخاب کنید.';
+    			]]></add>
+    		</operation>
+    	</file>
+
+    <!-- admin/model/catalog -->
+    	<file path="admin/model/catalog/product.php">
+    		<operation>
+    			<search><![CDATA[$this->db->escape($data['date_available'])]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa' ? $this->db->escape(jtg($data['date_available'])) : $this->db->escape($data['date_available']))]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$this->db->escape($product_discount['date_start'])]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa' ? $this->db->escape(jtg($product_discount['date_start'])) : $this->db->escape($product_discount['date_start']))]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[date_end = '" . $this->db->escape($product_discount['date_end']) . "']]></search>
+    			<add position="replace"><![CDATA[date_end = '" . ($this->language->get('code') == 'fa' ? $this->db->escape(jtg($product_discount['date_end'])) : $this->db->escape($product_discount['date_end'])) . "']]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[date_start = '" . $this->db->escape($product_special['date_start']) . "']]></search>
+    			<add position="replace"><![CDATA[date_start = '" . ($this->language->get('code') == 'fa' ? $this->db->escape(jtg($product_special['date_start'])) : $this->db->escape($product_special['date_start'])) . "']]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[date_end = '" . $this->db->escape($product_special['date_end']) . "']]></search>
+    			<add position="replace"><![CDATA[date_end = '" . ($this->language->get('code') == 'fa' ? $this->db->escape(jtg($product_special['date_end'])) : $this->db->escape($product_special['date_end'])) . "']]></add>
+    		</operation>
+    	</file>
+
+    <!-- admin/model/marketing -->
+    	<file path="admin/model/marketing/coupon.php">
+    		<operation>
+    			<search><![CDATA[date_start = '" . $this->db->escape($data['date_start']) . "', date_end = '" . $this->db->escape($data['date_end']) . "']]></search>
+    			<add position="replace"><![CDATA[date_start = '" . ($this->language->get('code') == 'fa' ? $this->db->escape(jtg($data['date_start'])) : $this->db->escape($data['date_start'])) . "', date_end = '" . ($this->language->get('code') == 'fa' ? $this->db->escape(jtg($data['date_end'])) : $this->db->escape($data['date_end'])) . "']]></add>
+    		</operation>
+    	</file>
+
+    <!-- admin/model/sale -->
+    	<file path="admin/model/sale/return.php">
+    		<operation>
+    			<search><![CDATA[date_ordered = '" . $this->db->escape($data['date_ordered']) . "',]]></search>
+    			<add position="replace"><![CDATA[date_ordered = '" . ($this->language->get('code') == 'fa' ? $this->db->escape(jtg($data['date_ordered'])) : $this->db->escape($data['date_ordered'])) . "',]]></add>
+    		</operation>
+    	</file>
+
+    <!-- admin/model/report -->
+    	<file path="admin/model/report/customer.php">
+    		<operation info="getTotalCustomersByMonth">
+    			<search><![CDATA[for ($i = 1; $i <= date('t'); $i++) {]]></search>
+    			<add position="before"><![CDATA[/* *********************************** */
+    		if ($this->language->get('code') == 'fa') {
+    			for ($i = 1; $i <= jdate('t'); $i++) {
+    				$jdate = jdate('Y') . '-' . jdate('m') . '-' . $i;
+    				$date = jtg($jdate);
+
+    				$customer_data[jdate('j', strtotime($date))] = array(
+    					'day'   => jdate('d', strtotime($date)),
+    					'total' => 0
+    				);
+    			}
+
+    			$jmdate = jdate('Y') . '-' . jdate('m') . '-1';
+    			$gmdate = jtg($jmdate);
+    			$query = $this->db->query("SELECT COUNT(*) AS total, date_added FROM `" . DB_PREFIX . "customer` WHERE DATE(date_added) >= '" . $this->db->escape($gmdate) . "' GROUP BY DATE(date_added)");
+
+    			foreach ($query->rows as $result) {
+    				$customer_data[jdate('j', strtotime($result['date_added']))] = array(
+    					'day'   => jdate('d', strtotime($result['date_added'])),
+    					'total' => $result['total']
+    				);
+    			}
+    		} else {
+    /* *********************************** */]]></add>
+    		</operation>
+    		<operation info="getTotalCustomersByMonth">
+    			<search><![CDATA[$customer_data[date('j', strtotime($result['date_added']))] = array(]]></search>
+    			<add position="after" offset="4"><![CDATA[
+    		}//Add
+    			]]></add>
+    		</operation>
+    		<operation info="getTotalCustomersByYear">
+    			<search><![CDATA[for ($i = 1; $i <= 12; $i++) {]]></search>
+    			<add position="before"><![CDATA[/* *********************************** */
+    		if ($this->language->get('code') == 'fa') {
+    			for ($i = 1; $i <= 12; $i++) {
+    				$jmonth = gregorian_to_jalali(date('Y'), $i, date('d'));
+    				$jmonth = $jmonth[1];
+    				$jyear = jdate('Y');
+
+    				$customer_data[$jmonth] = array(
+    					'month' => jdate('F', jmktime(0, 0, 0, $jmonth)),//M or F
+    					'total' => 0
+    				);
+
+    				$jmdate = jdate('Y') . '-' . $jmonth . '-1';
+    				$gmdate = jtg($jmdate);
+    				$query = $this->db->query("SELECT YEAR(date_added) AS year, MONTH(date_added) AS month, DAY(date_added) AS day, date_added FROM `" . DB_PREFIX . "customer` WHERE DATE(date_added) >= '" . $this->db->escape($gmdate) . "' GROUP BY DATE(date_added)");
+    				$total_rows = 0;
+    				$date_add = '';
+
+    				if ($query->num_rows) {
+    					foreach ($query->rows as $result) {
+    						$customer_jdate = gregorian_to_jalali($result['year'], $result['month'], $result['day']);
+
+    						if ($customer_jdate[0] == $jyear && $customer_jdate[1] == $jmonth) {
+    							if($total_rows == 0) {$date_add = $result['date_added'];}
+    							$total_rows = $total_rows + 1;
+    						}
+    					}
+
+    					$customer_data[jdate('n', strtotime($date_add))] = array(
+    						'month' => jdate('F', strtotime($date_add)),//M or F
+    						'total' => $total_rows
+    					);
+    				}
+    			}
+    		} else {
+    /* *********************************** */]]></add>
+    		</operation>
+    		<operation info="getTotalCustomersByYear">
+    			<search><![CDATA[$customer_data[date('n', strtotime($result['date_added']))] = array(]]></search>
+    			<add position="after" offset="4"><![CDATA[
+    		}//Add
+    			]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/model/report/sale.php">
+    		<operation info="getTotalOrdersByMonth">
+    			<search><![CDATA[for ($i = 1; $i <= date('t'); $i++) {]]></search>
+    			<add position="before"><![CDATA[/* *********************************** */
+    		if ($this->language->get('code') == 'fa') {
+    			for ($i = 1; $i <= jdate('t'); $i++) {
+    				$jdate = jdate('Y') . '-' . jdate('m') . '-' . $i;
+    				$date = jtg($jdate);
+
+    				$order_data[jdate('j', strtotime($date))] = array(
+    					'day'   => jdate('d', strtotime($date)),
+    					'total' => 0
+    				);
+    			}
+
+    			$jmdate = jdate('Y') . '-' . jdate('m') . '-1';
+    			$gmdate = jtg($jmdate);
+    			$query = $this->db->query("SELECT COUNT(*) AS total, date_added FROM `" . DB_PREFIX . "order` WHERE order_status_id > '0' AND DATE(date_added) >= '" . $this->db->escape($gmdate) . "' GROUP BY DATE(date_added)");
+
+    			foreach ($query->rows as $result) {
+    				$order_data[jdate('j', strtotime($result['date_added']))] = array(
+    					'day'   => jdate('d', strtotime($result['date_added'])),
+    					'total' => $result['total']
+    				);
+    			}
+    		} else {
+    /* *********************************** */]]></add>
+    		</operation>
+    		<operation info="getTotalOrdersByMonth">
+    			<search><![CDATA[$order_data[date('j', strtotime($result['date_added']))] = array(]]></search>
+    			<add position="after" offset="4"><![CDATA[
+    		}//Add
+    			]]></add>
+    		</operation>
+    		<operation info="getTotalOrdersByYear">
+    			<search><![CDATA[for ($i = 1; $i <= 12; $i++) {]]></search>
+    			<add position="before"><![CDATA[/* *********************************** */
+    		if ($this->language->get('code') == 'fa') {
+    			for ($i = 1; $i <= 12; $i++) {
+    				$jmonth = gregorian_to_jalali(date('Y'), $i, date('d'));
+    				$jmonth = $jmonth[1];
+    				$jyear = jdate('Y');
+
+    				$order_data[$jmonth] = array(
+    					'month' => jdate('F', jmktime(0, 0, 0, $jmonth)),//M or F
+    					'total' => 0
+    				);
+
+    				$jmdate = jdate('Y') . '-' . $jmonth . '-1';
+    				$gmdate = jtg($jmdate);
+    				$query = $this->db->query("SELECT YEAR(date_added) AS year, MONTH(date_added) AS month, DAY(date_added) AS day, date_added FROM `" . DB_PREFIX . "order` WHERE order_status_id > '0' AND DATE(date_added) >= '" . $this->db->escape($gmdate) . "' GROUP BY DATE(date_added)");
+    				$total_rows = 0;
+    				$date_add = '';
+
+    				if ($query->num_rows) {
+    					foreach ($query->rows as $result) {
+    						$order_jdate = gregorian_to_jalali($result['year'], $result['month'], $result['day']);
+
+    						if ($order_jdate[0] == $jyear && $order_jdate[1] == $jmonth) {
+    							if($total_rows == 0) {$date_add = $result['date_added'];}
+    							$total_rows = $total_rows + 1;
+    						}
+    					}
+
+    					$order_data[jdate('n', strtotime($date_add))] = array(
+    						'month' => jdate('F', strtotime($date_add)),//M or F
+    						'total' => $total_rows
+    					);
+    				}
+    			}
+    		} else {
+    /* *********************************** */]]></add>
+    		</operation>
+    		<operation info="getTotalOrdersByYear">
+    			<search><![CDATA[$order_data[date('n', strtotime($result['date_added']))] = array(]]></search>
+    			<add position="after" offset="4"><![CDATA[
+    		}//Add
+    			]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[order_status_id IN(" . implode(",", $implode) . ")]]></search>
+    			<add position="replace"><![CDATA[order_status_id > '0']]></add>
+    		</operation>
+    	</file>
+
+    <!-- admin/view/template -->
+    	<file path="admin/view/template/catalog/product_form.tpl">
+    		<operation>
+    			<search><![CDATA[<?php echo $date_available; ?>]]></search>
+    			<add position="replace"><![CDATA[<?php echo !isset($this->request->post['date_available']) ? ($lang_code == 'fa' ? gtj($date_available) : $date_available) : $date_available; ?>]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[<?php echo $product_discount['date_start']; ?>]]></search>
+    			<add position="replace"><![CDATA[<?php echo !isset($this->request->post['product_discount']) ? ($lang_code == 'fa' ? gtj($product_discount['date_start']) : $product_discount['date_start']) : $product_discount['date_start']; ?>]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[<?php echo $product_discount['date_end']; ?>]]></search>
+    			<add position="replace"><![CDATA[<?php echo !isset($this->request->post['product_discount']) ? ($lang_code == 'fa' ? gtj($product_discount['date_end']) : $product_discount['date_end']) : $product_discount['date_end']; ?>]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[<?php echo $product_special['date_start']; ?>]]></search>
+    			<add position="replace"><![CDATA[<?php echo !isset($this->request->post['product_special']) ? ($lang_code == 'fa' ? gtj($product_special['date_start']) : $product_special['date_start']) : $product_special['date_start']; ?>]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[<?php echo $product_special['date_end']; ?>]]></search>
+    			<add position="replace"><![CDATA[<?php echo !isset($this->request->post['product_special']) ? ($lang_code == 'fa' ? gtj($product_special['date_end']) : $product_special['date_end']) : $product_special['date_end']; ?>]]></add>
+    		</operation>
+    	</file>
+
+    	<file path="admin/view/template/marketing/coupon_form.tpl">
+    		<operation>
+    			<search><![CDATA[<?php echo $date_start; ?>]]></search>
+    			<add position="replace"><![CDATA[<?php echo !isset($this->request->post['date_start']) ? ($lang_code == 'fa' ? gtj($date_start) : $date_start) : $date_start; ?>]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[<?php echo $date_end; ?>]]></search>
+    			<add position="replace"><![CDATA[<?php echo !isset($this->request->post['date_end']) ? ($lang_code == 'fa' ? gtj($date_end) : $date_end) : $date_end; ?>]]></add>
+    		</operation>
+    	</file>
+
+    	<file path="admin/view/template/setting/setting.tpl">
+    		<operation>
+    			<search><![CDATA[<label class="col-sm-2 control-label" for="input-length-class"><?php echo $entry_length_class; ?></label>]]></search>
+    			<add position="before" offset="1"><![CDATA[
+    <!--*****************Start Shamsi Date********************-->
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-shamsidate-format"><span data-toggle="tooltip" title="<?php echo $help_shamsidate_format; ?>"><?php echo $entry_shamsidate_format; ?></span></label>
+                    <div class="col-sm-10">
+                      <select name="config_shamsidate_format" id="input-shamsidate-format" class="form-control">
+                        <?php foreach ($shamsidate_formats as $format) { ?>
+                        <?php if ($format['code'] == $config_shamsidate_format) { ?>
+                        <option value="<?php echo $format['code']; ?>" selected="selected"><?php echo $format['title']; ?></option>
+                        <?php } else { ?>
+                        <option value="<?php echo $format['code']; ?>"><?php echo $format['title']; ?></option>
+                        <?php } ?>
+                        <?php } ?>
+                      </select>
+                    </div>
+                  </div>
+    <!--*****************Ends Shamsi Date********************-->
+    			]]></add>
+    		</operation>
+    	</file>
+    	<file path="admin/view/template/setting/store_form.tpl">
+    		<operation>
+    			<search><![CDATA[<div class="tab-pane" id="tab-option">]]></search>
+    			<add position="before" offset="1"><![CDATA[
+    <!--*****************Start Shamsi Date********************-->
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-shamsidate-format"><span data-toggle="tooltip" title="<?php echo $help_shamsidate_format; ?>"><?php echo $entry_shamsidate_format; ?></span></label>
+                    <div class="col-sm-10">
+                      <select name="config_shamsidate_format" id="input-shamsidate-format" class="form-control">
+                        <?php foreach ($shamsidate_formats as $format) { ?>
+                        <?php if ($format['code'] == $config_shamsidate_format) { ?>
+                        <option value="<?php echo $format['code']; ?>" selected="selected"><?php echo $format['title']; ?></option>
+                        <?php } else { ?>
+                        <option value="<?php echo $format['code']; ?>"><?php echo $format['title']; ?></option>
+                        <?php } ?>
+                        <?php } ?>
+                      </select>
+                    </div>
+                  </div>
+    <!--*****************Ends Shamsi Date********************-->
+    			]]></add>
+    		</operation>
+    	</file>
+
+    <!--catalog/controller/account/download,order,recurring,return,transaction.php-->
+    	<file path="catalog/controller/account/{download,order,recurring,return,reward,transaction}.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></add>
+    		</operation>
+    	</file>
+    	<file path="catalog/controller/account/order.php">
+    		<operation>
+    			<search><![CDATA[$data['date_added'] = date($this->language->get('date_format_short'), strtotime($order_info['date_added']));]]></search>
+    			<add position="replace"><![CDATA[$data['date_added'] = ($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($order_info['date_added'])) : date($this->language->get('date_format_short'), strtotime($order_info['date_added']));]]></add>
+    		</operation>
+    	</file>
+    	<file path="catalog/controller/account/recurring.php">
+    		<operation>
+    			<search><![CDATA[$data['date_added'] = date($this->language->get('date_format_short'), strtotime($recurring_info['date_added']));]]></search>
+    			<add position="replace"><![CDATA[$data['date_added'] = ($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($recurring_info['date_added'])) : date($this->language->get('date_format_short'), strtotime($recurring_info['date_added']));]]></add>
+    		</operation>
+    	</file>
+    	<file path="catalog/controller/account/return.php">
+    		<operation>
+    			<search><![CDATA[$data['date_ordered'] = date($this->language->get('date_format_short'), strtotime($return_info['date_ordered']));]]></search>
+    			<add position="replace"><![CDATA[$data['date_ordered'] = ($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($return_info['date_ordered'])) : date($this->language->get('date_format_short'), strtotime($return_info['date_ordered']));]]></add>
+    		</operation>
+    		<operation>
+    			<search><![CDATA[$data['date_added'] = date($this->language->get('date_format_short'), strtotime($return_info['date_added']));]]></search>
+    			<add position="replace"><![CDATA[$data['date_added'] = ($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($return_info['date_added'])) : date($this->language->get('date_format_short'), strtotime($return_info['date_added']));]]></add>
+    		</operation>
+    	</file>
+
+    <!-- catalog/controller/affiliate -->
+    	<file path="catalog/controller/affiliate/transaction.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></add>
+    		</operation>
+    	</file>
+
+    <!-- catalog/controller/common -->
+    	<file path="catalog/controller/common/footer.php">
+    		<operation error="skip">
+    			<search><![CDATA[date('Y', time())]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa' ? jdate('Y', time()) : date('Y', time()))]]></add>
+    		</operation>
+    	</file>
+
+    <!-- catalog/controller/product -->
+    	<file path="catalog/controller/product/product.php">
+    		<operation>
+    			<search><![CDATA[date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa') ? jdate($this->config->get('config_shamsidate_format'), strtotime($result['date_added'])) : date($this->language->get('date_format_short'), strtotime($result['date_added']))]]></add>
+    		</operation>
+    	</file>
+
+    <!-- catalog/model/account -->
+    	<file path="catalog/model/account/return.php">
+    		<operation>
+    			<search><![CDATA[$this->db->escape($data['date_ordered'])]]></search>
+    			<add position="replace"><![CDATA[($this->language->get('code') == 'fa' ? $this->db->escape(jtg($data['date_ordered'])) : $this->db->escape($data['date_ordered']))]]></add>
+    		</operation>
+    	</file>
+
+    <!-- catalog/model/checkout -->
+    	<file path="catalog/model/checkout/order.php">
+    		<operation>
+    			<search><![CDATA[date($language->get('date_format_short'), strtotime($order_info['date_added']))]]></search>
+    			<add position="replace"><![CDATA[$language->get('code') == 'fa' ? jdate($this->config->get('config_shamsidate_format'), strtotime($order_info['date_added'])) : date($language->get('date_format_short'), strtotime($order_info['date_added']))]]></add>
+    		</operation>
+    	</file>
+
+    <!-- catalog/language/en-gb -->
+    	<file path="catalog/language/en-gb/en-gb.php">
+    		<operation>
+    			<search><![CDATA[$_['datetime_format']]]></search>
+    			<add position="before"><![CDATA[
+    $_['datetime_format_long'] = 'd/m/Y H:i:s';
+    			]]></add>
+    		</operation>
+    	</file>
+
+</modification>

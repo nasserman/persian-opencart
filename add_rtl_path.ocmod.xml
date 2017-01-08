@@ -1,0 +1,49 @@
+<modification>
+    <name>add rtl path to OpenCart</name>
+    <version>2.3.0.2</version>
+    <code>add_rtl_path_ocmod</code>
+    <author>opencartcms.org(gh.m)</author>
+    <link>http://opencartcms.org/</link>
+	<license>GNU General Public License version 3 (GPLv3)</license>
+
+
+<!-- RTL-Email -->
+<!-- catalog/controller/extension/total/voucher.php,catalog/model/checkout/order.php,admin/model/sale/voucher.php -->
+	<file path="catalog/controller/extension/total/voucher.php">
+		<operation>
+			<search><![CDATA[$mail->setHtml($this->load->view('mail/voucher', $data));]]></search>
+			<add position="replace"><![CDATA[
+				if ($order_info['language_code'] == 'fa-ir') {
+					$mail->setHtml($this->load->view('mail/voucher-rtl', $data));
+				} else {
+					$mail->setHtml($this->load->view('mail/voucher', $data));
+				}
+			]]></add>
+		</operation>
+	</file>
+	<file path="catalog/model/checkout/order.php">
+		<operation>
+			<search><![CDATA[$mail->setHtml($this->load->view('mail/order', $data));]]></search>
+			<add position="replace"><![CDATA[
+				if ($order_info['language_code'] == 'fa-ir') {
+					$mail->setHtml($this->load->view('mail/order-rtl', $data));
+				} else {
+					$mail->setHtml($this->load->view('mail/order', $data));
+				}
+			]]></add>
+		</operation>
+	</file>
+	<file path="admin/model/sale/voucher.php">
+		<operation>
+			<search><![CDATA[$mail->setHtml($this->load->view('mail/voucher', $data));]]></search>
+			<add position="replace"><![CDATA[
+				if ($order_info['language_code'] == 'fa-ir') {
+					$mail->setHtml($this->load->view('mail/voucher-rtl', $data));
+				} else {
+					$mail->setHtml($this->load->view('mail/voucher', $data));
+				}
+			]]></add>
+		</operation>
+	</file>
+
+</modification>
