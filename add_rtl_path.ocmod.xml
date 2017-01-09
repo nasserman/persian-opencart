@@ -26,7 +26,7 @@
 			<search><![CDATA[$mail->setHtml($this->load->view('mail/order', $data));]]></search>
 			<add position="replace"><![CDATA[
 				if ($order_info['language_code'] == 'fa-ir') {
-					$mail->setHtml($this->load->view('mail/order-rtl', $data));
+					$mail->setHtml($this->load->view('mail/orderrtl', $data));
 				} else {
 					$mail->setHtml($this->load->view('mail/order', $data));
 				}
